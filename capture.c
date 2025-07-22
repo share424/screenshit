@@ -83,6 +83,10 @@ Image take_screenshot() {
     Image out_img;
     hbitmap_to_image_rgba(hBitmap, hMemDC, &out_img);
 
+    DeleteObject(hBitmap);
+    DeleteDC(hMemDC);
+    ReleaseDC(NULL, hScreenDC);
+
     return out_img;
 }
 #elif defined(__linux__)
