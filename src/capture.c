@@ -1,23 +1,12 @@
 #include "capture.h"
 #include <stdio.h>
+#include <stdlib.h>
 
-#define STB_IMAGE_WRITE_IMPLEMENTATION
-#include "stb_image_write.h"
-
-void save_image_as_png(const char *filename, const Image *img) {
-    int stride = img->width * 4; // 4 bytes per pixel (RGBA)
-    // stbi_write_png returns 1 on success
-    if (stbi_write_png(filename, img->width, img->height, 4, img->data, stride)) {
-        printf("Saved PNG: %s\n", filename);
-    } else {
-        printf("Failed to save PNG: %s\n", filename);
-    }
-}
 
 #ifdef _WIN32
 #include <windows.h>
 
-int hbitmap_to_image_rgba(HBITMAP hBitmap, HDC hDC, Image *out_img) {
+int hbitmap_to_image_rgba(HBITMAP hBitmap, HDC hDC, CaptureImage *out_img) {
     BITMAP bmp;
     GetObject(hBitmap, sizeof(BITMAP), &bmp);
     int width = bmp.bmWidth;
@@ -68,7 +57,7 @@ int hbitmap_to_image_rgba(HBITMAP hBitmap, HDC hDC, Image *out_img) {
     return 1;
 }
 
-Image take_screenshot() {
+CaptureImage take_screenshit() {
     HDC hScreenDC = GetDC(NULL);
 
     int screenWidth = GetSystemMetrics(SM_CXSCREEN);
@@ -80,7 +69,7 @@ Image take_screenshot() {
 
     BitBlt(hMemDC, 0, 0, screenWidth, screenHeight, hScreenDC, 0, 0, SRCCOPY);
 
-    Image out_img;
+    CaptureImage out_img;
     hbitmap_to_image_rgba(hBitmap, hMemDC, &out_img);
 
     DeleteObject(hBitmap);
